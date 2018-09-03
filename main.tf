@@ -66,7 +66,6 @@ resource "aws_cloudtrail" "s3_cloudtrail" {
 
     data_resource {
       type   = "AWS::S3::Object"
-      values = ["arn:aws:s3:::"]
 	  values = ["${aws_s3_bucket.s3_source_bucket.arn/}"]
     }
   }
@@ -92,11 +91,11 @@ EOF
 }
 
 resource "aws_lambda_function" "test_lambda" {
-  filename         = "lambda_function_payload.zip"
+  filename         = "function.zip"
   function_name    = "function.lambda"
   role             = "${aws_iam_role.iam_for_lambda.arn}"
-  handler          = "exports.test"
-  source_code_hash = "${base64sha256(file("lambda_function_payload.zip"))}"
+  handler          = "function.sample"
+  source_code_hash = "${base64sha256(file("function.zip"))}"
   runtime          = "python2.7"
 }
 resource "aws_iam_role_policy" "lambda_policy" {
