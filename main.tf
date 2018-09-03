@@ -51,16 +51,12 @@ resource "aws_s3_bucket" "logs_bucket" {
     ]
 }
 POLICY
-}
-
   tags {
     Name        = "logs_Bucket"
   }
 }
-
-resource "aws_cloudtrail" "cloudtrail" {
-  # ... other configuration ...
-name                          = "tf-trail-ct"
+resource "aws_cloudtrail" "s3_cloudtrail" {
+  name                          = "terraform_ct"
   s3_bucket_name                = "${aws_s3_bucket.logs_bucket.id}"
   s3_key_prefix                 = "prefix"
   include_global_service_events = false
