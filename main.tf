@@ -95,7 +95,7 @@ EOF
 
 data "archive_file" "lambda_zip" {
     type        = "zip"
-    source_dir  = "function.py"
+    source_file  = "function.py"
     output_path = "function.zip"
 }
 
