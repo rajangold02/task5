@@ -1,6 +1,9 @@
 provider "aws" {
-	region = "us-east-1"
+  access_key = "${var.access_key}"
+  secret_key = "${var.secret_key}"
+  region     = "${var.region}"
 }
+
 resource "aws_s3_bucket" "s3_source_bucket" {
   bucket = "${var.source_bucket_s3}"
   acl    = "private"
@@ -92,7 +95,7 @@ EOF
 
 resource "aws_lambda_function" "test_lambda" {
   filename         = "function.zip"
-  function_name    = "function.lambda"
+  function_name    = "${function.lambda}"
   role             = "${aws_iam_role.iam_for_lambda.arn}"
   handler          = "function.sample"
   source_code_hash = "${base64sha256(file("function.zip"))}"
