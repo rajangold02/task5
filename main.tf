@@ -9,22 +9,24 @@ resource "aws_s3_bucket" "s3_source_bucket" {
   acl    = "private"
 
   tags {
-    Name        = "Source_Bucket"
+    Name = "Source_Bucket"
   }
 }
+
 resource "aws_s3_bucket" "s3_destination_bucket" {
   bucket = "${var.destination_bucket_s3}"
   acl    = "private"
 
   tags {
-    Name        = "Destination_Bucket"
+    Name = "Destination_Bucket"
   }
 }
+
 resource "aws_s3_bucket" "logs_bucket" {
   bucket = "mylogsbucketraj"
   acl    = "private"
-  
-   policy = <<POLICY
+
+  policy = <<POLICY
 {
     "Version": "2012-10-17",
     "Statement": [
@@ -54,25 +56,29 @@ resource "aws_s3_bucket" "logs_bucket" {
     ]
 }
 POLICY
+
   tags {
-    Name        = "logs_Bucket"
+    Name = "logs_Bucket"
   }
 }
+
 resource "aws_cloudtrail" "s3_cloudtrail" {
   name                          = "terraform_ct"
   s3_bucket_name                = "${aws_s3_bucket.logs_bucket.id}"
   s3_key_prefix                 = "prefix"
   include_global_service_events = false
+
   event_selector {
-    read_write_type = "All"
+    read_write_type           = "All"
     include_management_events = true
 
     data_resource {
       type   = "AWS::S3::Object"
-	  values = ["${aws_s3_bucket.s3_source_bucket.arn}/"]
+      values = ["${aws_s3_bucket.s3_source_bucket.arn}/"]
     }
   }
 }
+
 resource "aws_iam_role" "iam_for_lambda" {
   name = "iam_for_lambda"
 
@@ -94,9 +100,9 @@ EOF
 }
 
 data "archive_file" "lambda_zip" {
-    type        = "zip"
-    source_file  = "function.py"
-    output_path = "function.zip"
+  type        = "zip"
+  source_file = "function.py"
+  output_path = "function.zip"
 }
 
 resource "aws_lambda_function" "test_lambda" {
@@ -107,6 +113,7 @@ resource "aws_lambda_function" "test_lambda" {
   source_code_hash = "${data.archive_file.lambda_zip.output_base64sha256}"
   runtime          = "python2.7"
 }
+
 resource "aws_iam_role_policy" "lambda_policy" {
   name = "test_policy"
   role = "${aws_iam_role.iam_for_lambda.id}"
