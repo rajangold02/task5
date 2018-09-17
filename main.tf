@@ -115,7 +115,7 @@ resource "aws_lambda_function" "test_lambda" {
 }
 
 resource "aws_iam_role_policy" "lambda_policy" {
-  name = "test_policy"
+  name = "lambda_policy"
   role = "${aws_iam_role.iam_for_lambda.id}"
 
   policy = <<EOF
@@ -135,7 +135,7 @@ EOF
 }
 
 resource "aws_cloudwatch_event_rule" "s3" {
-  name        = "capture-s3-upload"
+  name        = "s3-upload"
   description = "Capture each upload to s3"
 
   event_pattern = <<PATTERN
@@ -155,12 +155,20 @@ resource "aws_cloudwatch_event_rule" "s3" {
     ],
     "requestParameters": {
       "bucketName": [
-        "${var.source_bucket_s3}"
+        "mysourcebucketraj"
       ]
     }
   }
 }
 PATTERN
+}
+
+resource "aws_lambda_permission" "demo_lambda" {
+  statement_id  = "AllowExecutionFromCloudWatch"
+  action        = "lambda:InvokeFunction"
+  function_name = "${aws_lambda_function.test_lambda.function_name}"
+  principal     = "events.amazonaws.com"
+  source_arn    = "${aws_cloudwatch_event_rule.s3.arn}"
 }
 
 resource "aws_cloudwatch_event_target" "s3" {
