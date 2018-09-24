@@ -11,9 +11,7 @@ def sample(event, context):
         bucket_keys.append(res['Key'])
     latest = max(last_modified)
     latest_key = last_modified.index(latest)
-    print latest_key
     new_file = bucket_keys[latest_key]
-    print new_file
     
     copy_source = {
     'Bucket': 'mysourcebucketraj',
